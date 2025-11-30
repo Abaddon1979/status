@@ -16,8 +16,9 @@ after_initialize do
     end
   end
 
-  # Force-load the status controller so DiscourseStatus::StatusController is defined
-  require_dependency "discourse_status/status_controller"
+  # Force-load the status controller so DiscourseStatus::StatusController is defined.
+  # Using an explicit `load` with a full path avoids Zeitwerk/bootsnap load path issues.
+  load File.expand_path("../app/controllers/discourse_status/status_controller.rb", __FILE__)
 
   # Routes for the status engine
   DiscourseStatus::Engine.routes.draw do
