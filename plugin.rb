@@ -29,9 +29,9 @@ after_initialize do
     post "/" => "status#update"
   end
 
-  # Mount engine at /status
+  # Mount engine at /chat-status (avoid clashing with core /status and /user-status)
   Discourse::Application.routes.append do
-    mount ::DiscourseStatus::Engine, at: "/status"
+    mount ::DiscourseStatus::Engine, at: "/chat-status"
   end
 
   # Store status and background image in user custom fields
