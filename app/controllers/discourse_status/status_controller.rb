@@ -4,6 +4,18 @@ module DiscourseStatus
   class StatusController < ::ApplicationController
     requires_login except: [:show]
 
+    # GET /status.json  (current user's status/background)
+    def current
+      user = current_user
+      raise Discourse::InvalidAccess.new unless user
+
+      render_json_dump(
+        username: user.username,
+        status: user.custom_fields["chat_status"] || "",
+        background_url: user.custom_fields["chat_bg"] || ""
+      )
+    end
+
     # GET /status/:username.json
     def show
       user = fetch_user_from_params
