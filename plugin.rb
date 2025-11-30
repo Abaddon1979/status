@@ -18,7 +18,8 @@ after_initialize do
 
   # Force-load the status controller so DiscourseStatus::StatusController is defined.
   # Using an explicit `load` with a full path avoids Zeitwerk/bootsnap load path issues.
-  load File.expand_path("../app/controllers/discourse_status/status_controller.rb", __FILE__)
+  # __dir__ is the plugin root; the controller lives under ./app/controllers/...
+  load File.expand_path("app/controllers/discourse_status/status_controller.rb", __dir__)
 
   # Routes for the status engine
   DiscourseStatus::Engine.routes.draw do
