@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# name: discourse-status
+# name: status
 # about: Simple user status storage for Discord-style chat/theme
 # version: 0.1
 # authors: disorder
