@@ -16,6 +16,9 @@ after_initialize do
     end
   end
 
+  # Force-load the status controller so DiscourseStatus::StatusController is defined
+  require_dependency "discourse_status/status_controller"
+
   # Routes for the status engine
   DiscourseStatus::Engine.routes.draw do
     # GET /status.json  -> current user's status/background (requires login)
