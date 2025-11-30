@@ -9,34 +9,26 @@
 enabled_site_setting :enable_user_status rescue nil
 
 after_initialize do
-  module ::DiscourseStatus
-    class Engine < ::Rails::Engine
-      engine_name "discourse_status"
-      isolate_namespace DiscourseStatus
-    end
-  end
-
   # Force-load the status controller so DiscourseStatus::StatusController is defined.
   # Using an explicit `load` with a full path avoids Zeitwerk/bootsnap load path issues.
   # __dir__ is the plugin root; the controller lives under ./app/controllers/...
   load File.expand_path("app/controllers/discourse_status/status_controller.rb", __dir__)
 
-  # Routes for the status engine
-  DiscourseStatus::Engine.routes.draw do
-    # GET /status.json  -> current user's status/background (requires login)
-    get "/" => "status#current"
-
-    # GET /status/:username.json -> any user's status/background
-    get "/:username" => "status#show", constraints: { username: RouteFormat.username }
-
-    # POST/PUT /status.json -> update current user's status/background
-    put "/" => "status#update"
-    post "/" => "status#update"
-  end
-
-  # Mount engine at /chat-status (avoid clashing with core /status and /user-status)
+  # Direct routes under the main Discourse application, mounted at /chat-status.
+  # This avoids any Rails::Engine routing quirks and guarantees that
+  #   /chat-status.json
+  #   /chat-status/:username.json
+  # are available when the plugin is enabled.
   Discourse::Application.routes.append do
-    mount ::DiscourseStatus::Engine, at: "/chat-status"
+    # GET /chat-status.json  -> current user's status/background (requires login)
+    get "/chat-status" => "discourse_status/status#current"
+
+    # GET /chat-status/:username.json -> any user's status/background
+    get "/chat-status/:username" => "discourse_status/status#show", constraints: { username: RouteFormat.username }
+
+    # POST/PUT /chat-status.json -> update current user's status/background
+    put "/chat-status" => "discourse_status/status#update"
+    post "/chat-status" => "discourse_status/status#update"
   end
 
   # Store status and background image in user custom fields
